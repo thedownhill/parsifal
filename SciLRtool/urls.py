@@ -1,32 +1,34 @@
 # coding: utf-8
 
-from django.conf.urls import patterns, include, url
+from django.urls import include, path
+from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.contrib import admin
 
+from SciLRtool import core, authentication, reviews, activities
+from SciLRtool.core import views as core_views
+
 
 admin.autodiscover()
 
-urlpatterns = patterns('parsifal',
-    url(r'^$', 'core.views.home', name='home'),
-    url(r'^about/$', TemplateView.as_view(template_name='core/about.html'), name='about'),
-    url(r'^signup/$', 'authentication.views.signup', name='signup'),
-    url(r'^signin/$', 'authentication.views.signin', name='signin'),
-    url(r'^signout/$', 'authentication.views.signout', name='signout'),
-    url(r'^reset/$', 'authentication.views.reset', name='reset'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', 'authentication.views.reset_confirm', name='password_reset_confirm'),
-    url(r'^success/$', 'authentication.views.success', name='success'),
-    url(r'^reviews/', include('parsifal.reviews.urls', namespace='reviews')),
-    url(r'^activity/', include('parsifal.activities.urls', namespace='activities')),
-    url(r'^blog/', include('parsifal.blog.urls', namespace='blog')),
-    url(r'^help/', include('parsifal.help.urls', namespace='help')),
-    url(r'^library/', include('parsifal.library.urls', namespace='library')),
-    url(r'^settings/', include('parsifal.account_settings.urls', namespace='settings')),
+urlpatterns = [
+    ### core
+    path('', include('SciLRtool.core.urls')),
+    # authentication
+    path('', include('SciLRtool.authentication.urls')),
+
+    path(r'^admin/', include(admin.site.urls)),
+    path(r'^reviews/', include('SciLRtool.reviews.urls', namespace='reviews')),
+    path(r'^activity/', include('SciLRtool.activities.urls', namespace='activities')),
+    path(r'^blog/', include('SciLRtool.blog.urls', namespace='blog')),
+    path(r'^help/', include('SciLRtool.help.urls', namespace='help')),
+    path(r'^library/', include('SciLRtool.library.urls', namespace='library')),
+    path(r'^settings/', include('SciLRtool.account_settings.urls', namespace='settings')),
+
     url(r'^review_settings/transfer/$', 'reviews.settings.views.transfer', name='transfer_review'),
     url(r'^review_settings/delete/$', 'reviews.settings.views.delete', name='delete_review'),
-    url(r'^admin/', include(admin.site.urls)),
     url(r'^sitemap.xml$', TemplateView.as_view(template_name='sitemap.xml', content_type='application/xml')),
     url(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^(?P<username>[^/]+)/following/$', 'activities.views.following', name='following'),
@@ -35,7 +37,7 @@ urlpatterns = patterns('parsifal',
     # Review URLs
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/$', 'reviews.views.review', name='review'),
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/settings/$', 'reviews.settings.views.settings', name='settings'),
-    
+
     # Planning Phase
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/$', 'reviews.planning.views.planning', name='planning'),
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/protocol/$', 'reviews.planning.views.protocol', name='protocol'),
@@ -56,7 +58,7 @@ urlpatterns = patterns('parsifal',
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/reporting/export/$', 'reviews.reporting.views.export', name='export'),
 
     url(r'^(?P<username>[^/]+)/$', 'reviews.views.reviews', name='reviews'),
-)
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

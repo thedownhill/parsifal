@@ -1,16 +1,16 @@
 # coding: utf-8
 
-from django.core.urlresolvers import reverse as r
+from django.urls import reverse as r
 from django.shortcuts import render
 from django.utils.html import escape
 
-from parsifal.activities.models import Activity
-from parsifal.blog.models import Entry
-from parsifal.reviews.models import Review
+from SciLRtool.activities.models import Activity
+from SciLRtool.blog.models import Entry
+from SciLRtool.reviews.models import Review
 
 
 def get_following_feeds(user):
-    feeds = []    
+    feeds = []
     try:
         activities = []
         followers = Activity.objects.filter(to_user=user, activity_type=Activity.FOLLOW)
@@ -42,9 +42,10 @@ def get_following_feeds(user):
                     escape(is_following)
                     )
             feeds.append(activity)
-    except Exception, e:
+    except Exception as e:
         pass
     return feeds
+
 
 def home(request):
     if request.user.is_authenticated():
@@ -54,10 +55,10 @@ def home(request):
             latest_news = Entry.objects.filter(status=Entry.PUBLISHED).order_by('-start_publication',)[0]
         except:
             latest_news = None
-        return render(request, 'core/home.html', { 
-                'user_reviews': user_reviews, 
-                'feeds': feeds, 
-                'latest_news': latest_news 
+        return render(request, 'core/home.html', {
+                'user_reviews': user_reviews,
+                'feeds': feeds,
+                'latest_news': latest_news
             })
     else:
         return render(request, 'core/cover.html')
