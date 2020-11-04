@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('status', models.CharField(default='U', max_length=1, choices=[('U', 'Unclassified'), ('R', 'Rejected'), ('A', 'Accepted'), ('D', 'Duplicated')])),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('document', models.ForeignKey(to='library.Document')),
+                ('document', models.ForeignKey(to='library.Document', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -28,13 +28,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('has_finished', models.BooleanField(default=False)),
-                ('review', models.ForeignKey(to='reviews.Review')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('review', models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='study',
             name='study_selection',
-            field=models.ForeignKey(to='reviews.StudySelection'),
+            field=models.ForeignKey(to='reviews.StudySelection', on_delete=models.CASCADE),
         ),
     ]

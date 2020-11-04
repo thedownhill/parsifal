@@ -48,7 +48,7 @@ def get_following_feeds(user):
 
 
 def home(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user_reviews = request.user.profile.get_reviews()
         feeds = get_following_feeds(request.user)
         try:

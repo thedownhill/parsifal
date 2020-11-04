@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.template.defaultfilters import slugify
 
-from parsifal.blog.models import Entry
+from SciLRtool.blog.models import Entry
 
 
 class EntryAdmin(admin.ModelAdmin):
@@ -22,5 +22,6 @@ class EntryAdmin(admin.ModelAdmin):
         slug_str = "%s %s" % (obj.pk, obj.title.lower()) 
         obj.slug = slugify(slug_str)
         obj.save()
+
 
 admin.site.register(Entry, EntryAdmin)

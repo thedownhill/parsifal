@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='question',
             name='review',
-            field=models.ForeignKey(related_name='research_questions', to='reviews.Review'),
+            field=models.ForeignKey(related_name='research_questions', to='reviews.Review', on_delete=models.CASCADE),
         ),
     ]

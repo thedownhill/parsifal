@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('location', models.CharField(max_length=50)),
                 ('url', models.CharField(max_length=50)),
                 ('institution', models.CharField(max_length=50)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'auth_profile',

@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from django.core.urlresolvers import reverse as r
+from django.urls import reverse as r
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect, render
+from django.shortcuts import redirect, render
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
@@ -10,9 +10,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 
-from parsifal.reviews.models import Review
-from parsifal.reviews.decorators import main_author_required
-from parsifal.reviews.settings.forms import ReviewSettingsForm
+from SciLRtool.reviews.models import Review
+from SciLRtool.reviews.decorators import main_author_required
+from SciLRtool.reviews.settings.forms import ReviewSettingsForm
 
 
 @main_author_required
@@ -50,7 +50,7 @@ def transfer(request):
         review = Review.objects.get(pk=review_id)
         try:
             transfer_user = User.objects.get(username=transfer_user_username)
-        except Exception, e:
+        except Exception as e:
             messages.warning(request, 'User not found.')
             return redirect('settings', review.author.username, review.name)
 
@@ -66,7 +66,7 @@ def transfer(request):
             messages.warning(request, 'Hey! You can\'t transfer the review to yourself.')
             return redirect('settings', review.author.username, review.name)
 
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest('Something went wrong.')
 
 

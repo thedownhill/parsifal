@@ -8,28 +8,29 @@ from bibtexparser.customization import convert_to_unicode
 import xlwt
 
 from django.views.decorators.http import require_POST
-from django.core.urlresolvers import reverse as r
+from django.urls import reverse as r
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render_to_response, redirect, get_object_or_404, render
+from django.shortcuts import redirect, get_object_or_404, render
 from django.template import RequestContext
 from django.conf import settings as django_settings
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.db.models import Count
 from django.utils.html import escape
 
-from parsifal.reviews.models import *
-from parsifal.reviews.decorators import main_author_required, author_required
-from parsifal.utils.elsevier.client import ElsevierClient
-from parsifal.utils.elsevier.exceptions import *
+from SciLRtool.reviews.models import *
+from SciLRtool.reviews.decorators import main_author_required, author_required
+from SciLRtool.utils.elsevier.client import ElsevierClient
+from SciLRtool.utils.elsevier.exceptions import *
 
 
 @author_required
 @login_required
 def conducting(request, username, review_name):
     return redirect(r('search_studies', args=(username, review_name)))
+
 
 @author_required
 @login_required
@@ -58,6 +59,7 @@ def search_studies(request, username, review_name):
             'sources_names': sources_names
             })
 
+
 @author_required
 @login_required
 @require_POST
@@ -77,6 +79,7 @@ def save_source_string(request):
         return HttpResponse()
     except:
         return HttpResponseBadRequest()
+
 
 @author_required
 @login_required
@@ -98,6 +101,7 @@ def remove_source_string(request):
         messages.error(request, u'{0} search string removed successfully!'.format(source.name))
     return redirect(r('search_studies', args=(review.author.username, review.name)))
 
+
 @author_required
 @login_required
 @require_POST
@@ -118,6 +122,7 @@ def import_base_string(request):
     except:
         return HttpResponseBadRequest()
 
+
 def elsevier_search(request, database):
     client = ElsevierClient(django_settings.ELSEVIER_API_KEY)
     query = request.GET.get('query', '')
@@ -132,9 +137,9 @@ def elsevier_search(request, database):
             result = client.search_science_direct({ 'query': query, 'count': count, 'start': start })
         data = json.dumps(result)
         return HttpResponse(data, content_type='application/json')
-    except ElsevierInvalidRequest, e:
+    except ElsevierInvalidRequest as e:
         return HttpResponseBadRequest('Invalid query. Please verify the syntax of your query before executing a new search.')
-    except ElsevierQuotaExceeded, e:
+    except ElsevierQuotaExceeded as e:
         return HttpResponseBadRequest('Parsifal\'s search quota on Elsevier\'s databases exceeded. Please try again later.')
 
 
@@ -143,10 +148,12 @@ def elsevier_search(request, database):
 def search_scopus(request):
     return elsevier_search(request, 'scopus')
 
+
 @author_required
 @login_required
 def search_science_direct(request):
     return elsevier_search(request, 'science_direct')
+
 
 @author_required
 @login_required
@@ -163,13 +170,14 @@ def import_studies(request, username, review_name):
             'sources': sources
         })
 
+
 @author_required
 @login_required
 def study_selection(request, username, review_name):
     review = Review.objects.get(name=review_name, author__username__iexact=username)
     try:
         active_tab = int(request.GET['source'])
-    except Exception, e:
+    except Exception as e:
         active_tab = -1
 
     add_sources = review.sources.count()
@@ -188,6 +196,7 @@ def study_selection(request, username, review_name):
             'finished_all_steps': finished_all_steps
         })
 
+
 def build_quality_assessment_table(request, review, order):
     selected_studies = review.get_accepted_articles().order_by(order)
     quality_questions = review.get_quality_assessment_questions()
@@ -203,7 +212,7 @@ def build_quality_assessment_table(request, review, order):
               </div>
 
             <table class="table" id="tbl-quality" article-id="{2}" csrf-token="{3}">
-                <tbody>'''.format(escape(study.title), study.get_score(), study.id, unicode(csrf(request)['csrf_token']), escape(study.year))
+                <tbody>'''.format(escape(study.title), study.get_score(), study.id, str(csrf(request)['csrf_token']), escape(study.year))
 
             quality_assessment = study.get_quality_assesment()
 
@@ -228,6 +237,7 @@ def build_quality_assessment_table(request, review, order):
         return str_table
     else:
         return ''
+
 
 @author_required
 @login_required
@@ -269,12 +279,13 @@ def quality_assessment(request, username, review_name):
             'order': order
         })
 
+
 def build_data_extraction_field_row(article, field):
     str_field = u''
 
     try:
         extraction = DataExtraction.objects.get(article=article, field=field)
-    except Exception, e:
+    except Exception as e:
         extraction = None
 
     if field.field_type == DataExtractionField.BOOLEAN_FIELD:
@@ -331,9 +342,10 @@ def build_data_extraction_field_row(article, field):
 
     return str_field
 
+
 def build_data_extraction_table(review, is_finished):
     selected_studies = review.get_final_selection_articles()
-    if is_finished != None:
+    if is_finished is not None:
         selected_studies = selected_studies.filter(finished_data_extraction=is_finished)
     data_extraction_fields = review.get_data_extraction_fields()
     has_quality_assessment = review.has_quality_assessment_checklist()
@@ -372,6 +384,7 @@ def build_data_extraction_table(review, is_finished):
     else:
         return u''
 
+
 @author_required
 @login_required
 def data_extraction(request, username, review_name):
@@ -406,7 +419,7 @@ def data_extraction(request, username, review_name):
 
     try:
         data_extraction_table = build_data_extraction_table(review, is_finished)
-    except Exception, e:
+    except Exception as e:
         raise e
         data_extraction_table = '<h3>Something went wrong while rendering the data extraction form.</h3>'
 
@@ -451,6 +464,7 @@ def bibtex_to_article_object(bib_database, review, source):
                 continue
             articles.append(article)
     return articles
+
 
 def _import_articles(request, source, articles):
     if any(articles):
@@ -546,7 +560,7 @@ def article_details(request):
     if user.profile.mendeley_token:
         mendeley_files = user.profile.get_mendeley_session().files.list().items
     context = RequestContext(request, { 'review': review, 'article': article, 'mendeley_files': mendeley_files })
-    return render_to_response('conducting/partial_conducting_article_details.html', context)
+    return render('conducting/partial_conducting_article_details.html', context)
 '''
 @author_required
 @login_required
@@ -577,6 +591,8 @@ def articles_upload(request):
     else:
         return HttpResponseBadRequest()
 '''
+
+
 def build_article_table_row(article):
     name = ''
     if article.created_by:
@@ -695,7 +711,7 @@ def quality_assessment_detailed(request):
         order = request.session.get('quality_assessment_order', 'title')
         quality_assessment_table = build_quality_assessment_table(request, review, order)
         context = RequestContext(request, {'review': review, 'quality_assessment_table': quality_assessment_table, 'order': order})
-        return render_to_response('conducting/partial_conducting_quality_assessment_detailed.html', context)
+        return render('conducting/partial_conducting_quality_assessment_detailed.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -707,7 +723,7 @@ def quality_assessment_summary(request):
         review_id = request.GET['review-id']
         review = Review.objects.get(pk=review_id)
         context = RequestContext(request, {'review': review, })
-        return render_to_response('conducting/partial_conducting_quality_assessment_summary.html', context)
+        return render('conducting/partial_conducting_quality_assessment_summary.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -781,8 +797,9 @@ def save_data_extraction(request):
             return HttpResponse()
         else:
             return HttpResponseBadRequest()
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest(e)
+
 
 @author_required
 @login_required
@@ -796,8 +813,9 @@ def save_data_extraction_status(request):
         article.finished_data_extraction = is_finished
         article.save()
         return HttpResponse()
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest(e)
+
 
 @author_required
 @login_required
@@ -806,7 +824,7 @@ def find_duplicates(request):
     review = Review.objects.get(pk=review_id)
     duplicates = review.get_duplicate_articles()
     context = RequestContext(request, {'duplicates': duplicates})
-    return render_to_response('conducting/partial_conducting_find_duplicates.html', context)
+    return render('conducting/partial_conducting_find_duplicates.html', context)
 
 
 @author_required
@@ -821,7 +839,7 @@ def resolve_duplicated(request):
             return HttpResponse()
         else:
             return HttpResponseBadRequest()
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest()
 
 
@@ -839,7 +857,7 @@ def resolve_all(request):
                 duplicate[i].save()
                 article_id_list.append(str(duplicate[i].id))
         return HttpResponse(','.join(article_id_list))
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest()
 
 
@@ -855,13 +873,15 @@ def new_article(request):
     article = Article(review=review, source=source)
 
     context = RequestContext(request, {'article': article})
-    return render_to_response('conducting/partial_conducting_article_details.html', context)
+    return render('conducting/partial_conducting_article_details.html', context)
+
 
 @author_required
 @login_required
 def data_analysis(request, username, review_name):
     review = get_object_or_404(Review, name=review_name, author__username__iexact=username)
     return render(request, 'conducting/conducting_data_analysis.html', { 'review': review })
+
 
 def articles_selection_chart(request):
     review_id = request.GET['review-id']
@@ -874,6 +894,7 @@ def articles_selection_chart(request):
         articles.append(source.name + ':' + str(count) + ':' + str(accepted_count))
     return HttpResponse(','.join(articles))
 
+
 def articles_per_year(request):
     review_id = request.GET['review-id']
     review = get_object_or_404(Review, pk=review_id)
@@ -885,6 +906,7 @@ def articles_per_year(request):
         except Exception:
             pass
     return HttpResponse(','.join(articles))
+
 
 @author_required
 @login_required
@@ -954,7 +976,7 @@ def export_results(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    for col_num in xrange(len(columns)):
+    for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num][0], font_style)
         # set column width
         ws.col(col_num).width = columns[col_num][1]
@@ -992,9 +1014,9 @@ def export_results(request):
                 article.get_status_display(),
                 article.comments,
             ]
-            for col_num in xrange(len(row)):
+            for col_num in range(len(row)):
                 ws.write(row_num, col_num, row[col_num], font_style)
-        except Exception, e:
+        except Exception as e:
             ws.write(row_num, 0, u'Error: {0}'.format(e.message), font_style)
 
         row_num += 1
@@ -1029,7 +1051,7 @@ def export_data_extraction(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    for col_num in xrange(len(columns)):
+    for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num][0], font_style)
         # set column width
         ws.col(col_num).width = columns[col_num][1]
@@ -1060,9 +1082,9 @@ def export_data_extraction(request):
                     field_value = ''
                 row.append(field_value)
 
-            for col_num in xrange(len(row)):
+            for col_num in range(len(row)):
                 ws.write(row_num, col_num, row[col_num], font_style)
-        except Exception, e:
+        except Exception as e:
             ws.write(row_num, 0, u'Error: {0}'.format(e.message), font_style)
 
         row_num += 1

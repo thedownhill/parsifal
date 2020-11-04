@@ -4,22 +4,22 @@ import time
 import json
 
 from django.db import transaction
-from django.core.urlresolvers import reverse as r
+from django.urls import reverse as r
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.utils.html import escape
 
-from parsifal.reviews.models import *
-from parsifal.reviews.planning.forms import KeywordForm, SynonymForm
-from parsifal.reviews.decorators import main_author_required, author_required
+from SciLRtool.reviews.models import *
+from SciLRtool.reviews.planning.forms import KeywordForm, SynonymForm
+from SciLRtool.reviews.decorators import main_author_required, author_required
 
 
 @author_required
@@ -27,17 +27,20 @@ from parsifal.reviews.decorators import main_author_required, author_required
 def planning(request, username, review_name):
     return redirect(r('protocol', args=(username, review_name)))
 
+
 @author_required
 @login_required
 def protocol(request, username, review_name):
     review = get_object_or_404(Review, name=review_name, author__username__iexact=username)
     return render(request, 'planning/protocol.html', { 'review': review })
 
+
 @author_required
 @login_required
 def quality_assessment_checklist(request, username, review_name):
     review = get_object_or_404(Review, name=review_name, author__username__iexact=username)
     return render(request, 'planning/quality_assessment_checklist.html', { 'review': review })
+
 
 @author_required
 @login_required
@@ -50,6 +53,7 @@ def data_extraction_form(request, username, review_name):
 '''
     OBJECTIVE FUNCTIONS
 '''
+
 
 @author_required
 @login_required
@@ -72,13 +76,14 @@ def save_objective(request):
     QUESTION FUNCTIONS
 '''
 
+
 @author_required
 @login_required
 def save_question(request):
-    '''
+    """
         Function used via Ajax request only.
         This function takes a review question form and save on the database
-    '''
+    """
     try:
         review_id = request.POST['review-id']
         question_id = request.POST['question-id']
@@ -91,9 +96,10 @@ def save_question(request):
         question.question = description[:500]
         question.save()
         context = RequestContext(request, {'question':question})
-        return render_to_response('planning/partial_planning_question.html', context)
+        return render('planning/partial_planning_question.html', context)
     except:
         return HttpResponseBadRequest()
+
 
 @author_required
 @login_required
@@ -111,13 +117,14 @@ def save_question_order(request):
     except:
         return HttpResponseBadRequest()
 
+
 @author_required
 @login_required
 def add_or_edit_question(request):
-    '''
+    """
         Function used via Ajax request only.
         This functions adds a new secondary question to the review.
-    '''
+    """
     try:
         review_id = request.POST['review-id']
         question_id = request.POST['question-id']
@@ -127,7 +134,7 @@ def add_or_edit_question(request):
         except:
             question = Question(review=review)
         context = RequestContext(request, {'question':question})
-        return render_to_response('planning/partial_planning_question_form.html', context)
+        return render('planning/partial_planning_question_form.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -135,10 +142,10 @@ def add_or_edit_question(request):
 @author_required
 @login_required
 def remove_question(request):
-    '''
+    """
         Function used via Ajax request only.
         This function removes a secondary question from the review.
-    '''
+    """
     try:
         review_id = request.POST['review-id']
         question_id = request.POST['question-id']
@@ -157,6 +164,7 @@ def remove_question(request):
     PICOC FUNCTIONS
 '''
 
+
 @author_required
 @login_required
 def save_picoc(request):
@@ -170,7 +178,7 @@ def save_picoc(request):
         review.context = request.POST['context'][:200]
         review.save()
         return HttpResponse()
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest()
 
 
@@ -179,10 +187,14 @@ def save_picoc(request):
 '''
 
 def extract_keywords(review, pico):
-    if pico == Keyword.POPULATION: keywords = review.population
-    elif pico == Keyword.INTERVENTION: keywords = review.intervention
-    elif pico == Keyword.COMPARISON: keywords = review.comparison
-    elif pico == Keyword.OUTCOME: keywords = review.outcome
+    if pico == Keyword.POPULATION:
+        keywords = review.population
+    elif pico == Keyword.INTERVENTION:
+        keywords = review.intervention
+    elif pico == Keyword.COMPARISON:
+        keywords = review.comparison
+    elif pico == Keyword.OUTCOME:
+        keywords = review.outcome
     keyword_list = keywords.split(',')
     keyword_objects = []
     for term in keyword_list:
@@ -233,6 +245,7 @@ def remove_keyword(request):
     except:
         return HttpResponseBadRequest()
 
+
 @transaction.atomic
 @author_required
 @login_required
@@ -271,6 +284,7 @@ def add_keyword(request):
     response['html'] = render_to_string('planning/partial_keyword_form.html', context)
     dump = json.dumps(response)
     return HttpResponse(dump, content_type='application/json')
+
 
 @transaction.atomic
 @author_required
@@ -318,13 +332,14 @@ def edit_keyword(request):
     SEARCH STRING FUNCTIONS
 '''
 
+
 @author_required
 @login_required
 def generate_search_string(request):
-    '''
+    """
         Function used via Ajax request only.
         Still have to refactor this function. This is just a first approach.
-    '''
+    """
     review_id = request.GET['review-id']
     review = Review.objects.get(pk=review_id)
 
@@ -376,14 +391,14 @@ def html_source(source):
 @author_required
 @login_required
 def save_source(request):
-    '''
+    """
         Function used via Ajax request only.
         This function adds a new source to the source list of the review.
         To add the source successfully the logged in user must be the author or a co-author
         of the review.
         If the request receives a source_id, that means the source already exist so the function
         will just edit the existing source and save the model.
-    '''
+    """
     try:
         review_id = request.GET['review-id']
         source_id = request.GET['source-id']
@@ -409,7 +424,7 @@ def save_source(request):
             review.sources.add(source)
             review.save()
         return HttpResponse(html_source(source))
-    except Exception, e:
+    except Exception as e:
         return HttpResponseBadRequest()
 
 
@@ -484,6 +499,7 @@ def add_suggested_sources(request):
     INCLUSION/EXCLUSION CRITERIA FUNCTIONS
 '''
 
+
 @author_required
 @login_required
 def add_criteria(request):
@@ -525,7 +541,7 @@ def add_quality_assessment_question(request):
     try:
         quality_question = QualityQuestion()
         context = RequestContext(request, {'quality_question': quality_question})
-        return render_to_response('planning/partial_quality_assessment_question_form.html', context)
+        return render('planning/partial_quality_assessment_question_form.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -537,7 +553,7 @@ def edit_quality_assessment_question(request):
         quality_question_id = request.GET['quality-question-id']
         quality_question = QualityQuestion.objects.get(pk=quality_question_id)
         context = RequestContext(request, {'quality_question': quality_question})
-        return render_to_response('planning/partial_quality_assessment_question_form.html', context)
+        return render('planning/partial_quality_assessment_question_form.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -561,7 +577,7 @@ def save_quality_assessment_question(request):
         quality_question.save()
 
         context = RequestContext(request, {'quality_question': quality_question})
-        return render_to_response('planning/partial_quality_assessment_question.html', context)
+        return render('planning/partial_quality_assessment_question.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -601,7 +617,7 @@ def add_quality_assessment_answer(request):
     try:
         quality_answer = QualityAnswer()
         context = RequestContext(request, {'quality_answer': quality_answer})
-        return render_to_response('planning/partial_quality_assessment_answer_form.html', context)
+        return render('planning/partial_quality_assessment_answer_form.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -613,7 +629,7 @@ def edit_quality_assessment_answer(request):
         quality_answer_id = request.GET['quality-answer-id']
         quality_answer = QualityAnswer.objects.get(pk=quality_answer_id)
         context = RequestContext(request, {'quality_answer': quality_answer})
-        return render_to_response('planning/partial_quality_assessment_answer_form.html', context)
+        return render('planning/partial_quality_assessment_answer_form.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -645,7 +661,7 @@ def save_quality_assessment_answer(request):
         quality_answer.save()
 
         context = RequestContext(request, {'quality_answer': quality_answer})
-        return render_to_response('planning/partial_quality_assessment_answer.html', context)
+        return render('planning/partial_quality_assessment_answer.html', context)
     except:
         return HttpResponseBadRequest()
 
@@ -723,7 +739,7 @@ def save_cutoff_score(request):
 def add_new_data_extraction_field(request):
     field = DataExtractionField()
     context = RequestContext(request, {'field': field})
-    return render_to_response('planning/partial_data_extraction_field_form.html', context)
+    return render('planning/partial_data_extraction_field_form.html', context)
 
 
 @author_required
@@ -732,7 +748,7 @@ def edit_data_extraction_field(request):
     field_id = request.GET['field-id']
     field = DataExtractionField.objects.get(pk=field_id)
     context = RequestContext(request, {'field': field})
-    return render_to_response('planning/partial_data_extraction_field_form.html', context)
+    return render('planning/partial_data_extraction_field_form.html', context)
 
 
 @author_required
@@ -767,7 +783,7 @@ def save_data_extraction_field(request):
                         data_extraction.value = ''
                         data_extraction.select_values.clear()
                         data_extraction.save()
-                except Exception, e:
+                except Exception as e:
                     pass
 
         field.description = description
@@ -787,7 +803,7 @@ def save_data_extraction_field(request):
                 select_value.delete()
 
         context = RequestContext(request, {'field': field})
-        return render_to_response('planning/partial_data_extraction_field.html', context)
+        return render('planning/partial_data_extraction_field.html', context)
     except:
         return HttpResponseBadRequest()
 

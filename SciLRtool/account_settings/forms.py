@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
-from parsifal.authentication.models import Profile
+from SciLRtool.authentication.models import Profile
+
 
 class UserEmailForm(forms.ModelForm):
     email = forms.CharField(widget=forms.EmailInput(attrs={ 'class': 'form-control' }), 
@@ -41,6 +42,7 @@ class ProfileForm(forms.ModelForm):
         u.save()
         profile = super(ProfileForm, self).save(*args,**kwargs)
         return profile
+
 
 class PasswordForm(PasswordChangeForm):
     old_password = forms.CharField(label='Old password', widget=forms.PasswordInput(attrs={ 'class': 'form-control' }))

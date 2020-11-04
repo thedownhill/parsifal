@@ -9,8 +9,8 @@ from bibtexparser.customization import convert_to_unicode
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse as r
+from django.template.context_processors import csrf
+from django.urls import reverse as r
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
@@ -18,9 +18,9 @@ from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from parsifal.reviews.models import Review, Article
-from parsifal.library.models import Folder, Document
-from parsifal.library.forms import FolderForm, DocumentForm, SharedFolderForm
+from SciLRtool.reviews.models import Review, Article
+from SciLRtool.library.models import Folder, Document
+from SciLRtool.library.forms import FolderForm, DocumentForm, SharedFolderForm, SharedFolder
 
 
 def get_order(request):
@@ -28,6 +28,7 @@ def get_order(request):
     if order in ['title', '-title', 'author', '-author', 'year', '-year']:
         return order
     return 'title'
+
 
 def get_paginated_documents(request, queryset):
     paginator = Paginator(queryset, 100)
@@ -40,10 +41,12 @@ def get_paginated_documents(request, queryset):
         documents = paginator.page(paginator.num_pages)
     return documents
 
+
 def get_filtered_documents(queryset, querystring):
     if querystring:
         queryset = queryset.filter(title__icontains=querystring)
     return queryset
+
 
 def library(request, documents, querystring, order, active_folder=None):
     reviews = Review.objects.filter(author=request.user)
@@ -61,6 +64,7 @@ def library(request, documents, querystring, order, active_folder=None):
             'current_full_path': current_full_path
         })
 
+
 @login_required
 def index(request):
     querystring = request.GET.get('q', '')
@@ -70,6 +74,7 @@ def index(request):
     queryset = queryset.order_by(order)
     documents = get_paginated_documents(request, queryset)
     return library(request, documents, querystring, order)
+
 
 @login_required
 @require_POST
@@ -86,6 +91,7 @@ def list_actions(request):
     redirect_to = request.POST.get('redirect', r('library:index'))
     return redirect(redirect_to)
 
+
 @login_required
 def folder(request, slug):
     querystring = request.GET.get('q', '')
@@ -96,6 +102,7 @@ def folder(request, slug):
     queryset = queryset.order_by(order)
     documents = get_paginated_documents(request, queryset)
     return library(request, documents, querystring, order, folder)
+
 
 @login_required
 @require_POST
@@ -109,6 +116,7 @@ def new_folder(request):
     else:
         dump = json.dumps(form.errors)
         return HttpResponseBadRequest(dump, content_type='application/json')
+
 
 @login_required
 @require_POST
@@ -130,6 +138,7 @@ def edit_folder(request):
             messages.error(request, u'An error ocurred while trying to save folder {0}'.format(folder.name))
     return redirect(r('library:folder', args=(folder.slug,)))
 
+
 @login_required
 def document(request, document_id):
     document = Document.objects.get(pk=document_id)
@@ -146,9 +155,10 @@ def document(request, document_id):
     else:
         form = DocumentForm(instance=document)
         json_context['status'] = 'ok'
-    csrf_token = unicode(csrf(request)['csrf_token'])
+    csrf_token = str(csrf(request)['csrf_token'])
     json_context['html'] = render_to_string('library/document.html', { 'form': form, 'csrf_token': csrf_token })
     return HttpResponse(json.dumps(json_context), content_type='application/json')
+
 
 @login_required
 def new_document(request):
@@ -166,17 +176,19 @@ def new_document(request):
     else:
         form = DocumentForm()
         json_context['status'] = 'ok'
-    csrf_token = unicode(csrf(request)['csrf_token'])
+    csrf_token = str(csrf(request)['csrf_token'])
     html = render_to_string('library/new_document.html', { 'form': form, 'csrf_token': csrf_token })
     json_context['html'] = html
     dump = json.dumps(json_context)
     return HttpResponse(dump, content_type='application/json')
+
 
 def get_document_verbose_name(documents_size):
     document_verbose_name = 'document'
     if documents_size > 1:
         document_verbose_name = 'documents'
     return document_verbose_name
+
 
 @login_required
 @require_POST
@@ -203,6 +215,7 @@ def move(request):
     redirect_to = request.POST.get('redirect', r('library:index'))
     return redirect(redirect_to)
 
+
 @login_required
 @require_POST
 def copy(request):
@@ -214,7 +227,7 @@ def copy(request):
     try:
         copy_to_folder = Folder.objects.get(pk=copy_to_folder_id)
     except Folder.DoesNotExist:
-        messages.error(u'The folder you are trying to copy does not exist.')
+        messages.error(request, u'The folder you are trying to copy does not exist.')
         return redirect(redirect_to)
 
     select_all_pages = request.POST.get('select-all-pages')
@@ -225,7 +238,7 @@ def copy(request):
             copy_from_folder = Folder.objects.get(pk=copy_from_folder_id)
             documents = copy_from_folder.documents.all()
         except Folder.DoesNotExist:
-            messages.error(u'The folder you are trying to copy does not exist.')
+            messages.error(request, u'The folder you are trying to copy does not exist.')
             return redirect(redirect_to)
     else:
         documents = Document.objects.filter(user=request.user)
@@ -239,6 +252,7 @@ def copy(request):
     copy_to_folder.documents.add(*documents)
     messages.success(request, u'Documents copied to folder {0} successfully!'.format(copy_to_folder.name))
     return redirect(redirect_to)
+
 
 @login_required
 @require_POST
@@ -265,6 +279,7 @@ def remove_from_folder(request):
         )
     redirect_to = request.POST.get('redirect', r('library:index'))
     return redirect(redirect_to)
+
 
 @login_required
 @require_POST
@@ -296,6 +311,7 @@ def delete_documents(request):
         )
     redirect_to = request.POST.get('redirect', r('library:index'))
     return redirect(redirect_to)
+
 
 @login_required
 @require_POST
@@ -366,6 +382,7 @@ def import_bibtex(request):
 
     return redirect(redirect_to)
 
+
 @login_required
 def shared_folder(request, slug):
     querystring = request.GET.get('q', '')
@@ -376,6 +393,7 @@ def shared_folder(request, slug):
     queryset = queryset.order_by(order)
     documents = get_paginated_documents(request, queryset)
     return library(request, documents, querystring, order, shared_folder)
+
 
 @login_required
 @require_POST

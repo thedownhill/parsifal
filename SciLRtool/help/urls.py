@@ -1,9 +1,10 @@
 # coding: utf-8
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
+from SciLRtool.help.views import *
 
-urlpatterns = patterns('parsifal.help.views',
-    url(r'^$', 'articles', name='articles'),
-    url(r'^search/$', 'search', name='search'),
-    url(r'^(?P<slug>[-\w]+)/$', 'article', name='article'),
-)
+urlpatterns = [
+    url(r'^$', articles, name='articles'),
+    url(r'^search/$', search, name='search'),
+    url(r'^(?P<slug>[-\w]+)/$', article, name='article'),
+]

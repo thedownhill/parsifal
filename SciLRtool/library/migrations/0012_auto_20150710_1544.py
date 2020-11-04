@@ -15,11 +15,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='documentfile',
             name='document',
-            field=models.ForeignKey(related_name='files', to='library.Document'),
+            field=models.ForeignKey(related_name='files', to='library.Document', on_delete=models.CASCADE),
         ),
     ]

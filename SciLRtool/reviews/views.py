@@ -1,21 +1,21 @@
 # coding: utf-8
 
-from django.core.urlresolvers import reverse as r
+from django.urls import reverse as r
 from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render_to_response, redirect, get_object_or_404, render
+from django.shortcuts import redirect, get_object_or_404, render
 from django.template import RequestContext
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
 from django.core.mail import EmailMultiAlternatives
 
-from parsifal.reviews.models import Review
-from parsifal.reviews.decorators import main_author_required, author_required
-from parsifal.reviews.forms import CreateReviewForm, ReviewForm
+from SciLRtool.reviews.models import Review
+from SciLRtool.reviews.decorators import main_author_required, author_required
+from SciLRtool.reviews.forms import CreateReviewForm, ReviewForm
 
 
 def reviews(request, username):
@@ -37,7 +37,8 @@ def reviews(request, username):
         'following_count': following_count,
         'followers_count': followers_count
         })
-    return render_to_response('reviews/reviews.html', context)
+    return render('reviews/reviews.html', context)
+
 
 @login_required
 def new(request):
@@ -162,6 +163,7 @@ def save_description(request):
             return HttpResponse('Your review has been saved successfully!')
     except:
         return HttpResponseBadRequest()
+
 
 @author_required
 @login_required

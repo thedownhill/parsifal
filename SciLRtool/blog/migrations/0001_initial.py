@@ -24,8 +24,8 @@ class Migration(migrations.Migration):
                 ('start_publication', models.DateTimeField()),
                 ('creation_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('last_update', models.DateTimeField(null=True, blank=True)),
-                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('edited_by', models.ForeignKey(related_name='+', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('created_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('edited_by', models.ForeignKey(related_name='+', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Entry',

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='articlefile',
             name='review',
-            field=models.ForeignKey(default=1, to='reviews.Review'),
+            field=models.ForeignKey(default=1, to='reviews.Review', on_delete=models.CASCADE),
             preserve_default=False,
         ),
     ]

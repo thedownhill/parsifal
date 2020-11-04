@@ -3,79 +3,79 @@ try:
     import cPickle as pickle
 except:
     import pickle
-from mendeley import DefaultStateGenerator
-from mendeley.session import MendeleySession
-from mendeley.auth import MendeleyAuthorizationCodeAuthenticator, handle_text_response
-from oauthlib.oauth2 import TokenExpiredError
-from requests_oauthlib import OAuth2Session
-from dropbox.client import DropboxClient
+# from mendeley import DefaultStateGenerator
+# from mendeley.session import MendeleySession
+# from mendeley.auth import MendeleyAuthorizationCodeAuthenticator, handle_text_response
+# from oauthlib.oauth2 import TokenExpiredError
+# from requests_oauthlib import OAuth2Session
+# from dropbox.client import DropboxClient
 
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db import models
 from django.conf import settings as django_settings
 
-from parsifal.activities.models import Activity
-from parsifal.reviews.models import Review
+from SciLRtool.activities.models import Activity
+from SciLRtool.reviews.models import Review
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     public_email = models.EmailField(null=True, blank=True)
     location = models.CharField(max_length=50)
     url = models.CharField(max_length=50)
     institution = models.CharField(max_length=50)
-    mendeley_token = models.CharField(max_length=2000, null=True, blank=True)
-    dropbox_token = models.CharField(max_length=2000, null=True, blank=True)
+    # mendeley_token = models.CharField(max_length=2000, null=True, blank=True)
+    # dropbox_token = models.CharField(max_length=2000, null=True, blank=True)
 
     class Meta:
         db_table = 'auth_profile'
 
-    def set_mendeley_token(self, value):
-        self.mendeley_token = pickle.dumps(value)
+    # def set_mendeley_token(self, value):
+    #     self.mendeley_token = pickle.dumps(value)
 
-    def get_mendeley_token(self):
-        try:
-            return pickle.loads(str(self.mendeley_token))
-        except Exception, e:
-            return None
+    # def get_mendeley_token(self):
+    #     try:
+    #         return pickle.loads(str(self.mendeley_token))
+    #     except Exception as e:
+    #         return None
+    #
+    # def get_mendeley_session(self):
+    #     mendeley = django_settings.MENDELEY
+    #     token = self.get_mendeley_token()
+    #     mendeley_session = None
+    #     if token:
+    #         mendeley_session = MendeleySession(mendeley, token)
+    #         try:
+    #             mendeley_session.profiles.me
+    #         except TokenExpiredError as e:
+    #             authenticator = MendeleyAuthorizationCodeAuthenticator(mendeley, DefaultStateGenerator.generate_state())
+    #             oauth = OAuth2Session(client=authenticator.client, redirect_uri=mendeley.redirect_uri, scope=['all'])
+    #             oauth.compliance_hook['access_token_response'] = [handle_text_response]
+    #             token = oauth.refresh_token(authenticator.token_url, auth=authenticator.auth, refresh_token=token['refresh_token'])
+    #             self.set_mendeley_token(token)
+    #             self.user.save()
+    #             mendeley_session = MendeleySession(mendeley, token)
+    #         except Exception as e:
+    #             pass
+    #     return mendeley_session
 
-    def get_mendeley_session(self):
-        mendeley = django_settings.MENDELEY
-        token = self.get_mendeley_token()
-        mendeley_session = None
-        if token:
-            mendeley_session = MendeleySession(mendeley, token)
-            try:
-                mendeley_session.profiles.me
-            except TokenExpiredError, e:
-                authenticator = MendeleyAuthorizationCodeAuthenticator(mendeley, DefaultStateGenerator.generate_state())
-                oauth = OAuth2Session(client=authenticator.client, redirect_uri=mendeley.redirect_uri, scope=['all'])
-                oauth.compliance_hook['access_token_response'] = [handle_text_response]
-                token = oauth.refresh_token(authenticator.token_url, auth=authenticator.auth, refresh_token=token['refresh_token'])
-                self.set_mendeley_token(token)
-                self.user.save()
-                mendeley_session = MendeleySession(mendeley, token)
-            except Exception, e:
-                pass
-        return mendeley_session
-
-    def get_mendeley_profile(self):
-        mendeley_session = self.get_mendeley_session()
-        mendeley_profile = None
-        if mendeley_session:
-            mendeley_profile = mendeley_session.profiles.me
-        return mendeley_profile
-
-    def get_dropbox_profile(self):
-        dropbox_profile = None
-        if self.dropbox_token is not None:
-            client = DropboxClient(self.dropbox_token)
-            try:
-                dropbox_profile = client.account_info()
-            except Exception, e:
-                pass
-        return dropbox_profile
+    # def get_mendeley_profile(self):
+    #     mendeley_session = self.get_mendeley_session()
+    #     mendeley_profile = None
+    #     if mendeley_session:
+    #         mendeley_profile = mendeley_session.profiles.me
+    #     return mendeley_profile
+    #
+    # def get_dropbox_profile(self):
+    #     dropbox_profile = None
+    #     if self.dropbox_token is not None:
+    #         client = DropboxClient(self.dropbox_token)
+    #         try:
+    #             dropbox_profile = client.account_info()
+    #         except Exception as e:
+    #             pass
+    #     return dropbox_profile
 
     def get_url(self):
         url = self.url
@@ -92,7 +92,7 @@ class Profile(models.Model):
                 return picture_url
             else:
                 return no_picture
-        except Exception, e:
+        except Exception as e:
             return no_picture
 
     def get_screen_name(self):
@@ -106,6 +106,7 @@ class Profile(models.Model):
 
     def get_followers(self):
         activities = Activity.objects.filter(to_user__pk=self.pk, activity_type=Activity.FOLLOW)
+        print(type(activities), len(activities))
         followers = []
         for activity in activities:
             followers.append(activity.from_user)
@@ -130,17 +131,22 @@ class Profile(models.Model):
         user_reviews = []
         author_reviews = Review.objects.filter(author=self.user)
         co_author_reviews = Review.objects.filter(co_authors=self.user)
-        for r in author_reviews: user_reviews.append(r)
-        for r in co_author_reviews: user_reviews.append(r)
+        for r in author_reviews:
+            user_reviews.append(r)
+        for r in co_author_reviews:
+            user_reviews.append(r)
         user_reviews.sort(key=lambda r: r.last_update, reverse=True)
         return user_reviews
+
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
+
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
 
 post_save.connect(create_user_profile, sender=User)
 post_save.connect(save_user_profile, sender=User)

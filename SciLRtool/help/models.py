@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from django.db import models
 from django.contrib.auth.models import User
 
-from parsifal.core.models import Media
+from SciLRtool.core.models import Media
 
 
 class Category(models.Model):
@@ -17,21 +17,22 @@ class Category(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Article(models.Model):
     title = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     content = models.TextField(max_length=4000, null=True, blank=True)
     references = models.TextField(max_length=2000, null=True, blank=True)
-    category = models.ForeignKey(Category)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     views = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    parent = models.ForeignKey(u'Article', null=True, blank=True)
+    parent = models.ForeignKey(u'Article', null=True, blank=True, on_delete=models.CASCADE)
     medias = models.ManyToManyField(Media, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name=u'help_article_creation_user')
+    created_by = models.ForeignKey(User, related_name=u'help_article_creation_user', on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(User, null=True, related_name=u'help_article_update_user')
+    updated_by = models.ForeignKey(User, null=True, related_name=u'help_article_update_user', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = u'Article'

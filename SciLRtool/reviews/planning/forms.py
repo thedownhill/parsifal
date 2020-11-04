@@ -1,6 +1,6 @@
 from django import forms
 
-from parsifal.reviews.models import Keyword
+from SciLRtool.reviews.models import Keyword
 
 
 class KeywordForm(forms.ModelForm):
@@ -19,6 +19,7 @@ class KeywordForm(forms.ModelForm):
     class Meta:
         model = Keyword
         fields = ['description', 'related_to', ]
+
 
 class SynonymForm(forms.ModelForm):
 

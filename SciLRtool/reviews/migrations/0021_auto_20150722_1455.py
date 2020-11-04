@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='keyword',
             name='synonym_of',
-            field=models.ForeignKey(related_name='synonyms', to='reviews.Keyword', null=True),
+            field=models.ForeignKey(related_name='synonyms', to='reviews.Keyword', null=True, on_delete=models.CASCADE),
         ),
     ]

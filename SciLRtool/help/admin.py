@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.template.defaultfilters import slugify
 
-from parsifal.help.models import Article, Category, Media
+from SciLRtool.help.models import Article, Category, Media
 
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -18,6 +18,7 @@ class ArticleAdmin(admin.ModelAdmin):
         obj.updated_by = request.user
         obj.slug = slugify(obj.title)
         obj.save()
+
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug',]

@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from parsifal.activities.models import Activity
+from SciLRtool.activities.models import Activity
 
 
 @login_required
@@ -54,6 +54,7 @@ def update_followers_count(request):
     except:
         return HttpResponseBadRequest()
 
+
 def following(request, username):
     page_user = get_object_or_404(User, username=username)
     page_title = 'following'
@@ -69,6 +70,7 @@ def following(request, username):
             'follow_list': following,
             'user_following': user_following
         })
+
 
 def followers(request, username):
     user = get_object_or_404(User, username=username)

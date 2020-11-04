@@ -1,6 +1,6 @@
 from django import forms
 
-from parsifal.reviews.models import Review
+from SciLRtool.reviews.models import Review
 
 
 class CreateReviewForm(forms.ModelForm):

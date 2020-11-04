@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from parsifal.core.models import Media
+from SciLRtool.core.models import Media
 
 
 class MediaAdmin(admin.ModelAdmin):
@@ -10,5 +10,6 @@ class MediaAdmin(admin.ModelAdmin):
     list_filter = ['media_type',]
     search_fields = ['name',]
     fields = ['name', 'url', 'media_type', 'content', 'content_type', 'width', 'height']
+
 
 admin.site.register(Media, MediaAdmin)

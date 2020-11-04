@@ -9,7 +9,7 @@ from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
-from parsifal.library.models import Document
+from SciLRtool.library.models import Document
 
 
 class Source(models.Model):
@@ -43,7 +43,7 @@ class Review(models.Model):
     name = models.SlugField(max_length=255)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=500, null=True, blank=True)
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     objective = models.TextField(max_length=1000)
@@ -66,7 +66,7 @@ class Review(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         return reverse('review', args=(str(self.author.username), str(self.name)))
 
     def get_questions(self):
@@ -121,7 +121,7 @@ class Review(models.Model):
             grouped_articles[slug]['articles'].append(article)
 
         duplicates = list()
-        for slug, data in grouped_articles.iteritems():
+        for slug, data in grouped_articles.items():
             if data['size'] > 1:
                 duplicates.append(data['articles'])
 
@@ -168,9 +168,9 @@ class Review(models.Model):
 
 
 class Question(models.Model):
-    review = models.ForeignKey(Review, related_name='research_questions')
+    review = models.ForeignKey(Review, related_name='research_questions', on_delete=models.CASCADE)
     question = models.CharField(max_length=500)
-    parent_question = models.ForeignKey('self', null=True, related_name='+')
+    parent_question = models.ForeignKey('self', null=True, related_name='+', on_delete=models.CASCADE)
     order = models.IntegerField(default=0)
 
     class Meta:
@@ -193,7 +193,7 @@ class SelectionCriteria(models.Model):
         (EXCLUSION, u'Exclusion'),
         )
 
-    review = models.ForeignKey(Review)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
     criteria_type = models.CharField(max_length=1, choices=SELECTION_TYPES)
     description = models.CharField(max_length=200)
 
@@ -211,8 +211,8 @@ class SelectionCriteria(models.Model):
 
 
 class SearchSession(models.Model):
-    review = models.ForeignKey(Review)
-    source = models.ForeignKey(Source, null=True)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    source = models.ForeignKey(Source, null=True, on_delete=models.CASCADE)
     search_string = models.TextField(max_length=10000)
     version = models.IntegerField(default=1)
 
@@ -228,17 +228,18 @@ class SearchSession(models.Model):
 def search_result_file_upload_to(instance, filename):
     return u'reviews/{0}/search_result/'.format(instance.review.pk)
 
+
 class SearchResult(models.Model):
-    review = models.ForeignKey(Review)
-    source = models.ForeignKey(Source)
-    search_session = models.ForeignKey(SearchSession, null=True)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    source = models.ForeignKey(Source, on_delete=models.CASCADE)
+    search_session = models.ForeignKey(SearchSession, null=True, on_delete=models.CASCADE)
     imported_file = models.FileField(upload_to=search_result_file_upload_to, null=True)
     documents = models.ManyToManyField(Document)
 
 
 class StudySelection(models.Model):
-    review = models.ForeignKey(Review)
-    user = models.ForeignKey(User, null=True)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     has_finished = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -260,9 +261,9 @@ class Study(models.Model):
         (ACCEPTED, u'Accepted'),
         (DUPLICATED, u'Duplicated'),
         )
-    study_selection = models.ForeignKey(StudySelection, related_name=u'studies')
-    document = models.ForeignKey(Document)
-    source = models.ForeignKey(Source, null=True)
+    study_selection = models.ForeignKey(StudySelection, related_name=u'studies', on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    source = models.ForeignKey(Source, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=1, choices=STUDY_STATUS, default=UNCLASSIFIED)
     updated_at = models.DateTimeField(auto_now=True)
     comments = models.TextField(max_length=2000, blank=True, null=True)
@@ -280,13 +281,13 @@ class Article(models.Model):
         (DUPLICATED, u'Duplicated'),
         )
 
-    review = models.ForeignKey(Review)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
     bibtex_key = models.CharField(max_length=100)
     title = models.CharField(max_length=1000, null=True, blank=True)
     author = models.CharField(max_length=1000, null=True, blank=True)
     journal = models.CharField(max_length=1000, null=True, blank=True)
     year = models.CharField(max_length=10, null=True, blank=True)
-    source = models.ForeignKey(Source, null=True)
+    source = models.ForeignKey(Source, null=True, on_delete=models.CASCADE)
     pages = models.CharField(max_length=20, null=True, blank=True)
     volume = models.CharField(max_length=100, null=True, blank=True)
     abstract = models.TextField(max_length=4000, null=True, blank=True)
@@ -318,7 +319,7 @@ class Article(models.Model):
 
     def get_score(self):
         score = QualityAssessment.objects.filter(article__id=self.id).aggregate(Sum('answer__weight'))
-        if score['answer__weight__sum'] == None:
+        if score['answer__weight__sum'] is None:
             return 0.0
         return score['answer__weight__sum']
 
@@ -343,9 +344,9 @@ class Keyword(models.Model):
         (OUTCOME, u'Outcome'),
         )
 
-    review = models.ForeignKey(Review, related_name='keywords')
+    review = models.ForeignKey(Review, related_name='keywords', on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
-    synonym_of = models.ForeignKey('self', null=True, related_name='synonyms')
+    synonym_of = models.ForeignKey('self', null=True, related_name='synonyms', on_delete=models.CASCADE)
     related_to = models.CharField(max_length=1, choices=RELATED_TO, blank=True)
 
     class Meta:
@@ -371,7 +372,7 @@ class QualityAnswer(models.Model):
         ('No', 0.0)
         )
 
-    review = models.ForeignKey(Review)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
     description = models.CharField(max_length=255)
     weight = models.FloatField()
 
@@ -385,7 +386,7 @@ class QualityAnswer(models.Model):
 
 
 class QualityQuestion(models.Model):
-    review = models.ForeignKey(Review)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
     description = models.CharField(max_length=255)
     order = models.IntegerField(default=0)
 
@@ -399,10 +400,10 @@ class QualityQuestion(models.Model):
 
 
 class QualityAssessment(models.Model):
-    user = models.ForeignKey(User, null=True)
-    article = models.ForeignKey(Article)
-    question = models.ForeignKey(QualityQuestion)
-    answer = models.ForeignKey(QualityAnswer, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    question = models.ForeignKey(QualityQuestion, on_delete=models.CASCADE)
+    answer = models.ForeignKey(QualityAnswer, null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return str(self.article.id) + ' ' + str(self.question.id)
@@ -426,7 +427,7 @@ class DataExtractionField(models.Model):
         (SELECT_MANY_FIELD, 'Select Many Field'),
         )
 
-    review = models.ForeignKey(Review)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
     description = models.CharField(max_length=255)
     field_type = models.CharField(max_length=1, choices=FIELD_TYPES)
     order = models.IntegerField(default=0)
@@ -444,7 +445,7 @@ class DataExtractionField(models.Model):
 
 
 class DataExtractionLookup(models.Model):
-    field = models.ForeignKey(DataExtractionField)
+    field = models.ForeignKey(DataExtractionField, on_delete=models.CASCADE)
     value = models.CharField(max_length=1000)
 
     class Meta:
@@ -457,9 +458,9 @@ class DataExtractionLookup(models.Model):
 
 
 class DataExtraction(models.Model):
-    user = models.ForeignKey(User, null=True)
-    article = models.ForeignKey(Article)
-    field = models.ForeignKey(DataExtractionField)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    field = models.ForeignKey(DataExtractionField, on_delete=models.CASCADE)
     value = models.TextField(blank=True, null=True)
     select_values = models.ManyToManyField(DataExtractionLookup)
 
@@ -475,7 +476,7 @@ class DataExtraction(models.Model):
     def _set_string_value(self, value):
         try:
             self.value = value.strip()
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def _set_float_value(self, value):
@@ -515,7 +516,7 @@ class DataExtraction(models.Model):
             if value:
                 _value = DataExtractionLookup.objects.get(pk=value)
                 self.select_values.add(_value)
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def _set_select_many_value(self, value):
@@ -526,7 +527,7 @@ class DataExtraction(models.Model):
                 self.select_values.remove(_value)
             else:
                 self.select_values.add(_value)
-        except Exception, e:
+        except Exception as e:
             raise e
 
     def set_value(self, value):
@@ -549,7 +550,7 @@ class DataExtraction(models.Model):
                 return False
             else:
                 return ''
-        except Exception, e:
+        except Exception as e:
             return ''
 
     def _get_string_value(self):
@@ -558,13 +559,13 @@ class DataExtraction(models.Model):
     def _get_float_value(self):
         try:
             return float(self.value)
-        except Exception, e:
+        except Exception as e:
             return ''
 
     def _get_integer_value(self):
         try:
             return int(self.value)
-        except Exception, e:
+        except Exception as e:
             return ''
 
     def _get_date_value(self):
@@ -573,19 +574,19 @@ class DataExtraction(models.Model):
                 return datetime.datetime.strptime(self.value, '%Y-%m-%d').date()
             else:
                 return ''
-        except Exception, e:
+        except Exception as e:
             return ''
 
     def _get_select_one_value(self):
         try:
             return self.select_values.all()[0]
-        except Exception, e:
+        except Exception as e:
             return None
 
     def _get_select_many_value(self):
         try:
             return self.select_values.all()
-        except Exception, e:
+        except Exception as e:
             return []
 
     def get_value(self):
@@ -606,5 +607,5 @@ class DataExtraction(models.Model):
         try:
             value = self.get_value()
             return value.strftime('%m/%d/%Y')
-        except Exception, e:
+        except Exception as e:
             return ''

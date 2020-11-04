@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='customarticlestatus',
             name='review',
-            field=models.ForeignKey(related_name='custom_article_status', to='reviews.Review'),
+            field=models.ForeignKey(related_name='custom_article_status', to='reviews.Review', on_delete=models.CASCADE),
         ),
     ]

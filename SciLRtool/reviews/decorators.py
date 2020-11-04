@@ -1,9 +1,9 @@
 from functools import wraps
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, Http404
 
-from parsifal.reviews.models import Review
+from SciLRtool.reviews.models import Review
 
 
 def main_author_required(f):
@@ -34,6 +34,7 @@ def main_author_required(f):
     wrap.__doc__=f.__doc__
     wrap.__name__=f.__name__
     return wrap
+
 
 def author_required(f):
     def wrap(request, *args, **kwargs):

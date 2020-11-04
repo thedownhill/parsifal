@@ -43,16 +43,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='article',
             name='category',
-            field=models.ForeignKey(to='help.Category'),
+            field=models.ForeignKey(to='help.Category', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='article',
             name='created_by',
-            field=models.ForeignKey(related_name='help_article_creation_user', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='help_article_creation_user', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='article',
             name='updated_by',
-            field=models.ForeignKey(related_name='help_article_update_user', to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='help_article_update_user', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
     ]

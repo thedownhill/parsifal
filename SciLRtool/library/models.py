@@ -46,8 +46,8 @@ class Collaborator(models.Model):
         (ADMIN, 'Admin'),
         )
 
-    user = models.ForeignKey(User)
-    shared_folder = models.ForeignKey(SharedFolder)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    shared_folder = models.ForeignKey(SharedFolder, on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
     is_owner = models.BooleanField(default=False)
     access = models.CharField(max_length=1, choices=ACCESS_TYPES, default=READ)
@@ -134,9 +134,9 @@ class Document(models.Model):
     url = models.CharField('URL', max_length=1000, null=True, blank=True)
 
     # Parsifal management field
-    user = models.ForeignKey(User, null=True, related_name='documents')
-    review = models.ForeignKey('reviews.Review', null=True, related_name='documents')
-    shared_folder = models.ForeignKey(SharedFolder, null=True, related_name='documents')
+    user = models.ForeignKey(User, null=True, related_name='documents', on_delete=models.CASCADE)
+    review = models.ForeignKey('reviews.Review', null=True, related_name='documents', on_delete=models.CASCADE)
+    shared_folder = models.ForeignKey(SharedFolder, null=True, related_name='documents', on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -152,8 +152,9 @@ class Document(models.Model):
 def document_file_upload_to(instance, filename):
     return u'library/{0}/'.format(instance.document.user.pk)
 
+
 class DocumentFile(models.Model):
-    document = models.ForeignKey(Document, related_name='files')
+    document = models.ForeignKey(Document, related_name='files', on_delete=models.CASCADE)
     document_file = models.FileField(upload_to='library/')
     filename = models.CharField(max_length=255)
     size = models.IntegerField(default=0)
@@ -171,7 +172,7 @@ class DocumentFile(models.Model):
 class Folder(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=255, null=True, blank=True)
-    user = models.ForeignKey(User, related_name='library_folders')
+    user = models.ForeignKey(User, related_name='library_folders', on_delete=models.CASCADE)
     documents = models.ManyToManyField(Document)
 
     class Meta:

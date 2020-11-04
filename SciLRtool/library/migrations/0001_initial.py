@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from django.conf import settings
-import parsifal.library.models
+import SciLRtool.library.models
 
 
 class Migration(migrations.Migration):
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 ('url', models.CharField(max_length=255, null=True, blank=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Document',
@@ -64,12 +64,12 @@ class Migration(migrations.Migration):
             name='DocumentFile',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('document_file', models.FileField(upload_to=parsifal.library.models.document_file_upload_to)),
+                ('document_file', models.FileField(upload_to=SciLRtool.library.models.document_file_upload_to)),
                 ('filename', models.CharField(max_length=255)),
                 ('size', models.IntegerField(default=0)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('document', models.ForeignKey(to='library.Document')),
+                ('document', models.ForeignKey(to='library.Document', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Document File',
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Folder',

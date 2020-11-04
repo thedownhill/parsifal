@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='article',
             name='parent',
-            field=models.ForeignKey(blank=True, to='help.Article', null=True),
+            field=models.ForeignKey(blank=True, to='help.Article', null=True, on_delete=models.CASCADE),
         ),
     ]

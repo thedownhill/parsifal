@@ -57,7 +57,7 @@ STATICFILES_DIRS = (
 
 SECRET_KEY = config('SECRET_KEY')
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

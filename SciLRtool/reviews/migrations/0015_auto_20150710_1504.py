@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='study',
             name='source',
-            field=models.ForeignKey(to='reviews.Source', null=True),
+            field=models.ForeignKey(to='reviews.Source', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='study',
             name='study_selection',
-            field=models.ForeignKey(related_name='studies', to='reviews.StudySelection'),
+            field=models.ForeignKey(related_name='studies', to='reviews.StudySelection', on_delete=models.CASCADE),
         ),
     ]

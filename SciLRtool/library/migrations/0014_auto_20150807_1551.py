@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=50)),
                 ('slug', models.SlugField(max_length=55)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
                 ('users', models.ManyToManyField(related_name='shared_folders', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -32,16 +32,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='document',
             name='review',
-            field=models.ForeignKey(related_name='documents', to='reviews.Review', null=True),
+            field=models.ForeignKey(related_name='documents', to='reviews.Review', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='document',
             name='user',
-            field=models.ForeignKey(related_name='documents', to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='documents', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='document',
             name='shared_folder',
-            field=models.ForeignKey(related_name='documents', to='library.SharedFolder', null=True),
+            field=models.ForeignKey(related_name='documents', to='library.SharedFolder', null=True, on_delete=models.CASCADE),
         ),
     ]

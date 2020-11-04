@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('size', models.IntegerField(default=0)),
                 ('article_file', models.FileField(upload_to=b'')),
-                ('article', models.ForeignKey(to='reviews.Article')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('article', models.ForeignKey(to='reviews.Article', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]

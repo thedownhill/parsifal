@@ -1,9 +1,9 @@
 import requests
 
-from exceptions import *
+from SciLRtool.utils.elsevier.exceptions import *
 
 
-class ElsevierClient(object):
+class ElsevierClient:
     def __init__(self,
                  api_key,
                  host='http://api.elsevier.com/content'):
@@ -24,14 +24,13 @@ class ElsevierClient(object):
         return self._parse_response(response)
 
     def _parse_response(self, response):
-        print response.status_code
+        print(response.status_code)
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 400:
             raise ElsevierInvalidRequest
         elif response.status_code == 429:
             raise ElsevierQuotaExceeded
-
 
     def search_scopus(self, params):
         return self._request('/search/scopus', params)

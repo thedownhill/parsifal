@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from parsifal.reviews.models import Review
+from SciLRtool.reviews.models import Review
 
 
 class ReviewAdmin(admin.ModelAdmin):

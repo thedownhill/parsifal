@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.CharField(max_length=1000, blank=True)),
-                ('article', models.ForeignKey(to='reviews.Article')),
+                ('article', models.ForeignKey(to='reviews.Article', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.CharField(max_length=1000)),
-                ('field', models.ForeignKey(to='reviews.DataExtractionField')),
+                ('field', models.ForeignKey(to='reviews.DataExtractionField', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('value',),
@@ -92,8 +92,8 @@ class Migration(migrations.Migration):
             name='QualityAssessment',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('answer', models.ForeignKey(to='reviews.QualityAnswer', null=True)),
-                ('article', models.ForeignKey(to='reviews.Article')),
+                ('answer', models.ForeignKey(to='reviews.QualityAnswer', null=True, on_delete=models.CASCADE)),
+                ('article', models.ForeignKey(to='reviews.Article', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('question', models.CharField(max_length=500)),
-                ('parent_question', models.ForeignKey(related_name='+', to='reviews.Question', null=True)),
+                ('parent_question', models.ForeignKey(related_name='+', to='reviews.Question', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Question',
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
                 ('comparison', models.CharField(max_length=200, blank=True)),
                 ('outcome', models.CharField(max_length=200, blank=True)),
                 ('context', models.CharField(max_length=200, blank=True)),
-                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
                 ('co_authors', models.ManyToManyField(related_name='co_authors', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('search_string', models.TextField(max_length=2000)),
-                ('review', models.ForeignKey(to='reviews.Review')),
+                ('review', models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -161,7 +161,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('criteria_type', models.CharField(max_length=1, choices=[(b'I', b'Inclusion'), (b'E', b'Exclusion')])),
                 ('description', models.CharField(max_length=200)),
-                ('review', models.ForeignKey(to='reviews.Review')),
+                ('review', models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('description',),
@@ -186,7 +186,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='searchsession',
             name='source',
-            field=models.ForeignKey(to='reviews.Source', null=True),
+            field=models.ForeignKey(to='reviews.Source', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='review',
@@ -196,47 +196,47 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='question',
             name='review',
-            field=models.ForeignKey(to='reviews.Review'),
+            field=models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualityquestion',
             name='review',
-            field=models.ForeignKey(to='reviews.Review'),
+            field=models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualityassessment',
             name='question',
-            field=models.ForeignKey(to='reviews.QualityQuestion'),
+            field=models.ForeignKey(to='reviews.QualityQuestion', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualityassessment',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualityanswer',
             name='review',
-            field=models.ForeignKey(to='reviews.Review'),
+            field=models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='keyword',
             name='review',
-            field=models.ForeignKey(to='reviews.Review'),
+            field=models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='keyword',
             name='synonym_of',
-            field=models.ForeignKey(to='reviews.Keyword', null=True),
+            field=models.ForeignKey(to='reviews.Keyword', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='dataextractionfield',
             name='review',
-            field=models.ForeignKey(to='reviews.Review'),
+            field=models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='dataextraction',
             name='field',
-            field=models.ForeignKey(to='reviews.DataExtractionField'),
+            field=models.ForeignKey(to='reviews.DataExtractionField', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='dataextraction',
@@ -246,16 +246,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='dataextraction',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='article',
             name='review',
-            field=models.ForeignKey(to='reviews.Review'),
+            field=models.ForeignKey(to='reviews.Review', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='article',
             name='source',
-            field=models.ForeignKey(to='reviews.Source', null=True),
+            field=models.ForeignKey(to='reviews.Source', null=True, on_delete=models.CASCADE),
         ),
     ]

@@ -1,8 +1,11 @@
 # coding: utf-8
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
+from SciLRtool.reviews.reporting.views import *
 
 
-urlpatterns = patterns('parsifal.reviews.reporting.views',
-    url(r'^download_docx/$', 'download_docx', name='download_docx'),
-)
+urlpatterns = [
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/reporting/$', reporting, name='reporting'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/reporting/export/$', export, name='export'),
+    # url(r'^download_docx/$', download_docx, name='download_docx'),
+]

@@ -3,7 +3,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from parsifal.library.models import SharedFolder, Folder, Document
+from SciLRtool.library.models import SharedFolder, Folder, Document
 
 
 class FolderForm(forms.ModelForm):
@@ -30,6 +30,7 @@ class SharedFolderForm(forms.ModelForm):
     class Meta:
         model = SharedFolder
         fields = ['name',]
+
 
 class DocumentForm(forms.ModelForm):
     
