@@ -1,6 +1,6 @@
-My logs what changed in forked version of parsifal
+# My logs what changed in forked version of parsifal
 
-python3 & Django2 adaption checklist (added on_delete=models.CASCADE as it was default in django 1.8 in every app)
+## python3 & Django2 adaption checklist (added on_delete=models.CASCADE as it was default in django 1.8 in every app)
 +) account_settings (commented out dropbox, mendeley)
 +) activities
 +) authentication (commented out dropbox, mendeley in models.py;
@@ -20,17 +20,15 @@ python3 & Django2 adaption checklist (added on_delete=models.CASCADE as it was d
 +) utils.elsevier
 
 
-+) added on_delete to all migrations, where missing
-+) {% load staticfiles %} changed to {% load static %}
-
-
------ (derpecated in Django 2.0)
+##  deprecated in Django 2.0
 django.core.urlresolvers.reverse  -> django.urls.reverse
 django.core.context_processors.csrf ---> django.template.context_processors.csrf
+{% load staticfiles %} changed to {% load static %} (templates)
+added on_delete to all models and migrations, where missing
 -----
 commented out dropbox, mendeley (check out later if it is needed)
 
----settings.py---
+## settings.py
 DATABASES = {
     'default': dj_database_url.config(
       default = config('DATABASE_URL'))
@@ -47,6 +45,6 @@ PROJECT_DIR from Path to os module
 ------
 SESSION_ENGINE added
 
-----urls----
+## urls
 split up SciLRtool/urls so that it contains only include() function: added urls.py to reviews.settings
 
