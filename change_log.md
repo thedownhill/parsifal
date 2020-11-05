@@ -18,10 +18,14 @@
 * reviews.conducting (check: for entry in bib_database.entries, no entries field)
 * reviews.planning
 * reviews.reporting (check: export.py: WD_ALIGN_PARAGRAPH)
-    (export_review_to_docx cant be imported (commented for now) bc 'from lxml import etree' doesnt work)
+    **(export_review_to_docx cant be im
+    ported (commented for now) bc 'from lxml import etree' doesnt work)**
 * reviews.settings
 * reviews
 * utils.elsevier
+
+## Bugs appeared after adaption
+- [x] Profile pictures
 
 
 ##  deprecated in Django 2.0
@@ -42,4 +46,8 @@
 
 ## urls
 split up SciLRtool/urls so that it contains only include() function: added urls.py to reviews.settings
+
+# Improvements & Updates
+
+* added admin.py to authentication to track Profiles of users
 
