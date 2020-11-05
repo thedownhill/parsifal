@@ -5,7 +5,8 @@ from SciLRtool.reviews.reporting.views import *
 
 
 urlpatterns = [
+    # url(r'^download_docx/$', download_docx, name='download_docx'),
+
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/reporting/$', reporting, name='reporting'),
     url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/reporting/export/$', export, name='export'),
-    # url(r'^download_docx/$', download_docx, name='download_docx'),
 ]

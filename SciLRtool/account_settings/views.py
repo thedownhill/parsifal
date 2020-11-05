@@ -34,7 +34,7 @@ def profile(request):
             return redirect(r('settings:profile'))
     else:
         form = ProfileForm(instance=request.user.profile)
-    return render(request, 'settings/profile.html', { 'form': form })
+    return render(request, 'settings/profile.html', {'form': form})
 
 
 @login_required
@@ -45,7 +45,7 @@ def picture(request):
             uploaded_picture = True
     except Exception as e:
         uploaded_picture = False
-    return render(request, 'settings/picture.html', { 'uploaded_picture': uploaded_picture })
+    return render(request, 'settings/picture.html', {'uploaded_picture': uploaded_picture})
 
 
 @login_required
@@ -59,7 +59,7 @@ def emails(request):
             messages.error(request, u'Please correct the error below.')
     else:
         form = UserEmailForm(instance=request.user)
-    return render(request, 'settings/emails.html', { 'form' : form })
+    return render(request, 'settings/emails.html', {'form': form})
 
 
 @login_required
@@ -74,7 +74,7 @@ def password(request):
             messages.error(request, u'Please correct the error below.')
     else:
         form = PasswordForm(request.user)
-    return render(request, 'settings/password.html', { 'form' : form })
+    return render(request, 'settings/password.html', {'form': form})
 
 
 @login_required
@@ -100,7 +100,8 @@ def upload_picture(request):
         else:
             messages.error(request, u'Invalid file format.')
     except Exception as e:
-        messages.error(request, u'An expected error occurred.')
+        print(str(e))
+        messages.error(request, u'An unexpected error occurred.')
     return redirect('/settings/picture/')
 
 

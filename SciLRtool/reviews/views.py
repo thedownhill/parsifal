@@ -42,6 +42,7 @@ def reviews(request, username):
 
 @login_required
 def new(request):
+    print('im here')
     if request.method == 'POST':
         form = CreateReviewForm(request.POST)
         if form.is_valid():
@@ -59,7 +60,7 @@ def new(request):
             return redirect(r('review', args=(review.author.username, review.name)))
     else:
         form = CreateReviewForm()
-    return render(request, 'reviews/new.html', { 'form': form })
+    return render(request, 'reviews/new.html', {'form': form})
 
 
 @author_required

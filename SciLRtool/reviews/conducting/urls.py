@@ -5,13 +5,6 @@ from SciLRtool.reviews.conducting.views import *
 
 
 urlpatterns = [
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/$', conducting, name='conducting'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/search/$', search_studies, name='search_studies'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/import/$', import_studies, name='import_studies'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/studies/$', study_selection, name='study_selection'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/quality/$', quality_assessment, name='quality_assessment'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/extraction/$', data_extraction, name='data_extraction'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/analysis/$', data_analysis, name='data_analysis'),
     url(r'^add_source_string/$', add_source_string, name='add_source_string'),
     url(r'^save_source_string/$', save_source_string, name='save_source_string'),
     url(r'^remove_source_string/$', remove_source_string, name='remove_source_string'),
@@ -40,6 +33,14 @@ urlpatterns = [
     url(r'^save_data_extraction_status/$', save_data_extraction_status, name='save_data_extraction_status'),
     url(r'^articles_selection_chart/$', articles_selection_chart, name='articles_selection_chart'),
     url(r'^articles_per_year/$', articles_per_year, name='articles_per_year'),
-    url(r'^export_data_extraction/$', export_data_extraction, name='export_data_extraction')
+    url(r'^export_data_extraction/$', export_data_extraction, name='export_data_extraction'),
+
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/$', conducting, name='conducting'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/search/$', search_studies, name='search_studies'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/import/$', import_studies, name='import_studies'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/studies/$', study_selection, name='study_selection'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/quality/$', quality_assessment, name='quality_assessment'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/extraction/$', data_extraction, name='data_extraction'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/conducting/analysis/$', data_analysis, name='data_analysis'),
 
 ]

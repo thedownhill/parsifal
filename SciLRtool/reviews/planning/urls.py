@@ -5,10 +5,6 @@ from SciLRtool.reviews.planning.views import *
 
 
 urlpatterns = [
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/$', planning, name='planning'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/protocol/$', protocol, name='protocol'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/quality/$', quality_assessment_checklist, name='quality_assessment_checklist'),
-    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/extraction/$', data_extraction_form, name='data_extraction_form'),
     url(r'^save_source/$', save_source, name='save_source'),
     url(r'^remove_source/$', remove_source_from_review, name='remove_source_from_review'),
     url(r'^suggested_sources/$', suggested_sources, name='suggested_sources'),
@@ -46,4 +42,9 @@ urlpatterns = [
     url(r'^save_cutoff_score/$', save_cutoff_score, name='save_cutoff_score'),
     url(r'^generate_search_string/$', generate_search_string, name='generate_search_string'),
     url(r'^save_generic_search_string/$', save_generic_search_string, name='save_generic_search_string'),
+
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/$', planning, name='planning'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/protocol/$', protocol, name='protocol'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/quality/$', quality_assessment_checklist, name='quality_assessment_checklist'),
+    url(r'^(?P<username>[^/]+)/(?P<review_name>[^/]+)/planning/extraction/$', data_extraction_form, name='data_extraction_form'),
 ]

@@ -88,6 +88,7 @@ class Profile(models.Model):
         try:
             filename = django_settings.MEDIA_ROOT + '/profile_pictures/' + self.user.username + '.jpg'
             picture_url = django_settings.MEDIA_URL + 'profile_pictures/' + self.user.username + '.jpg'
+            print(filename, picture_url)
             if os.path.isfile(filename):
                 return picture_url
             else:
