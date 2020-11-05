@@ -1,4 +1,4 @@
-# My logs what changed in forked version of parsifal
+# My logs: changes in forked version of parsifal
 
 ## Reminders
 
@@ -26,6 +26,8 @@
 
 ## Bugs appeared after adaption
 - [x] Profile pictures
+- [ ] Reporting stage (docx)
+- [x] sign in, log in, password reset
 
 
 ##  deprecated in Django 2.0
