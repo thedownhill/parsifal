@@ -30,14 +30,14 @@ def reviews(request, username):
 
     user_reviews = user.profile.get_reviews()
 
-    context = RequestContext(request, {
+    context = {
         'user_reviews': user_reviews, 
         'page_user': user, 
         'is_following': is_following,
         'following_count': following_count,
         'followers_count': followers_count
-        })
-    return render('reviews/reviews.html', context)
+        }
+    return render(request, 'reviews/reviews.html', context)
 
 
 @login_required

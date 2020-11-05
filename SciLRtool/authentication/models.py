@@ -1,8 +1,6 @@
 import os.path
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import pickle
+
 # from mendeley import DefaultStateGenerator
 # from mendeley.session import MendeleySession
 # from mendeley.auth import MendeleyAuthorizationCodeAuthenticator, handle_text_response
@@ -30,6 +28,8 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'auth_profile'
+        verbose_name = 'Profile'
+        verbose_name_plural = 'Profiles'
 
     # def set_mendeley_token(self, value):
     #     self.mendeley_token = pickle.dumps(value)
@@ -106,7 +106,7 @@ class Profile(models.Model):
 
     def get_followers(self):
         activities = Activity.objects.filter(to_user__pk=self.pk, activity_type=Activity.FOLLOW)
-        print(type(activities), len(activities))
+        # print(type(activities), len(activities))
         followers = []
         for activity in activities:
             followers.append(activity.from_user)

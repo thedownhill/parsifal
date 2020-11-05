@@ -18,7 +18,7 @@ def signup(request):
         form = SignUpForm(request.POST)
         if not form.is_valid():
             messages.add_message(request, messages.ERROR, 'There was some problems while creating your account. Please review some fields before submiting again.')
-            return render(request, 'auth/signup.html', { 'form': form })
+            return render(request, 'auth/signup.html', {'form': form})
         else:
             username = form.cleaned_data.get('username')
             email = form.cleaned_data.get('email')
@@ -29,7 +29,7 @@ def signup(request):
             messages.add_message(request, messages.SUCCESS, 'Your account were successfully created.')
             return HttpResponseRedirect('/' + username + '/')
     else:
-        return render(request, 'auth/signup.html', { 'form': SignUpForm() })
+        return render(request, 'auth/signup.html', {'form': SignUpForm()})
 
 
 def signin(request):

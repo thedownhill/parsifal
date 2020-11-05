@@ -4,7 +4,8 @@ from SciLRtool.blog.models import Entry
 
 def entries(request):
     entries = Entry.objects.filter(status=Entry.PUBLISHED).order_by('-start_publication',)
-    return render(request, 'blog/entries.html', { 'entries': entries })
+    print(entries)
+    return render(request, 'blog/entries.html', {'entries': entries})
 
 
 def entry(request, slug):
